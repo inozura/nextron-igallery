@@ -1,0 +1,12 @@
+appId: com.inozura.gallery
+productName: iGallery
+copyright: Copyright © 2020 iNozura
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+publish: null

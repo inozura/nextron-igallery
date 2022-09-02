@@ -1,0 +1,22 @@
+.element-gallery > a {
+  max-width: 200px;
+  max-height: 200px;
+  padding: 5px;
+  display: inline-block;
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+/* .child-element-gallery {
+  grid-row: 1/2;
+}
+
+@media (max-width: 768px) {
+  .child-element-gallery {
+    grid-column: 1;
+    grid-row: 3/1;
+  }
+} */
