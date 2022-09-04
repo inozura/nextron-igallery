@@ -9,4 +9,10 @@ files:
     filter:
       - package.json
       - app
+      - db.sqlite
+extraResources:
+  - from: .
+    filter:
+      - database
+      - db.sqlite
 publish: null

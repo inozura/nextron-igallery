@@ -77,7 +77,7 @@ export default (
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      ...options.webPreferences,
+      // ...options.webPreferences,
     },
   };
   win = new BrowserWindow(browserOptions);

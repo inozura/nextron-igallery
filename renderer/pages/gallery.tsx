@@ -2,18 +2,22 @@ import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Layout, message } from "antd";
+import { Button, Layout, message, Typography } from "antd";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import LightGallery from "lightgallery/react";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 import lgFullscreen from "lightgallery/plugins/fullscreen";
+import lgRotate from "lightgallery/plugins/rotate";
 
 const { Content } = Layout;
 import { querySqlite } from "../helpers/ipcrenderer";
+import ModalTambah from "../components/ModalTambah";
+import { imageGallery } from "../types/gallery";
 
 function Home() {
-  const [images, setImages] = React.useState<null | Array<Object>>(null);
+  const [openModalTambah, setOpenModalTambah] = React.useState(false);
+  const [images, setImages] = React.useState<null | Array<imageGallery>>(null);
   const [isLoadingFetchData, setIsLoadingFetchData] =
     React.useState<boolean>(false);
   const router = useRouter();
@@ -26,7 +30,7 @@ function Home() {
     setIsLoadingFetchData(true);
 
     await querySqlite({ status: "get" })
-      .then((res: Array<Object>) => {
+      .then((res: Array<imageGallery>) => {
         setImages(res);
       })
       .catch((err) => {
@@ -40,46 +44,37 @@ function Home() {
         <title>Home Gallery</title>
       </Head>
 
-      <Content style={{ padding: 48 }}>
+      <Content style={{ padding: "90px 48px 0px 48px" }}>
+        {/* <Typography.Title title="Gallery" style={{ textAlign: "right" }}>
+          Home
+        </Typography.Title> */}
         <LightGallery
           speed={500}
-          plugins={[lgThumbnail, lgZoom, lgFullscreen]}
+          plugins={[lgThumbnail, lgZoom, lgFullscreen, lgRotate]}
           fullScreen={true}
           thumbnail={true}
           mode="lg-fade"
           elementClassNames="element-gallery"
         >
-          <a href="images/logo.png">
-            <img className="img-fluid" src="images/logo.png" alt="thumbs" />
-          </a>
-          <a href="images/logo.png">
-            <img className="img-fluid" src="images/logo.png" alt="thumbs" />
-          </a>
-          <a href="images/logo.png">
-            <img className="img-fluid" src="images/logo.png" alt="thumbs" />
-          </a>
-          <a href="images/logo.png">
-            <img className="img-fluid" src="images/logo.png" alt="thumbs" />
-          </a>
-          <a href="images/Post IG KKN (1).png">
-            <img
-              className="img-fluid"
-              src="images/Post IG KKN (1).png"
-              alt="thumbs"
-            />
-          </a>
-          <a href="images/Post IG KKN (2).png">
-            <img className="img-fluid" src="images/logo.png" alt="thumbs" />
-          </a>
-          <a href="images/logo.png">
-            <img
-              className="img-fluid"
-              src="images/Post IG KKN (1).png"
-              alt="thumbs"
-            />
-          </a>
+          {images?.map((image) => (
+            <a href={image.uri}>
+              <img className="img-fluid" src={image.uri} alt={image.title} />
+            </a>
+          ))}
         </LightGallery>
       </Content>
+
+      <Button
+        type="primary"
+        size="large"
+        style={{ position: "fixed", bottom: 30, right: 30, borderRadius: 20 }}
+        onClick={() => setOpenModalTambah(true)}
+      >
+        {"+ "} Tambah Data
+      </Button>
+
+      {/* modal tambah */}
+      <ModalTambah open={openModalTambah} setOpen={setOpenModalTambah} />
     </React.Fragment>
   );
 }
