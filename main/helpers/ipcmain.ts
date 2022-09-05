@@ -53,6 +53,19 @@ ipcMain.on("sqlite-query", async (event, arg) => {
     } catch (error) {
       event.reply("sqlite-reply", JSON.stringify({ state: "error", error }));
     }
+  } else if (arg.status === "find") {
+    try {
+      const query = await db
+        .knex("images")
+        .where("title", "like", `%${arg.title}%`);
+
+      event.reply(
+        "sqlite-reply",
+        JSON.stringify({ state: "success", data: query })
+      );
+    } catch (error) {
+      event.reply("sqlite-reply", JSON.stringify({ state: "error", error }));
+    }
   }
 });
 

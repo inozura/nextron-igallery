@@ -6,7 +6,13 @@ import { RcFile, UploadProps } from "antd/lib/upload";
 import getBase64 from "../helpers/getbase64";
 import { querySqlite } from "../helpers/ipcrenderer";
 
-const ModalTambah = ({ open, setOpen }) => {
+interface newDataType {
+  title: string;
+  description: string;
+  uri: string;
+}
+
+const ModalTambah = ({ open, setOpen, fetchData }) => {
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState("");
   const [previewTitle, setPreviewTitle] = React.useState("");
@@ -17,7 +23,7 @@ const ModalTambah = ({ open, setOpen }) => {
   const handleSubmit = async (data: { Nama: string; Deskripsi: string }) => {
     const imageBase64 = await getBase64(fileList[0].originFileObj as RcFile);
 
-    const newData = {
+    const newData: newDataType = {
       title: data.Nama,
       description: data.Deskripsi,
       uri: imageBase64,
@@ -26,6 +32,7 @@ const ModalTambah = ({ open, setOpen }) => {
     await querySqlite({ status: "create", data: newData })
       .then(() => {
         message.success("Sukses Tambah Data");
+        fetchData();
         handleCloseMainModal();
       })
       .catch((err) => {

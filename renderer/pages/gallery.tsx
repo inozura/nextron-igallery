@@ -1,12 +1,13 @@
 import React from "react";
 import Head from "next/head";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { Button, Layout, message, Typography } from "antd";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { Button, Layout, message, Input, Empty } from "antd";
+import { Fade, Slide } from "react-awesome-reveal";
+
 import LightGallery from "lightgallery/react";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
+import lgZoomMedium from "lightgallery/plugins/mediumZoom";
 import lgFullscreen from "lightgallery/plugins/fullscreen";
 import lgRotate from "lightgallery/plugins/rotate";
 
@@ -18,6 +19,7 @@ import { imageGallery } from "../types/gallery";
 function Home() {
   const [openModalTambah, setOpenModalTambah] = React.useState(false);
   const [images, setImages] = React.useState<null | Array<imageGallery>>(null);
+  const [isLoadingSearch, setIsLoadingSearch] = React.useState<boolean>(false);
   const [isLoadingFetchData, setIsLoadingFetchData] =
     React.useState<boolean>(false);
   const router = useRouter();
@@ -38,6 +40,20 @@ function Home() {
       });
   };
 
+  const handleSearchData = async (title: string) => {
+    setIsLoadingSearch(true);
+    setTimeout(async () => {
+      try {
+        await querySqlite({ status: "find", title }).then(
+          (res: Array<imageGallery>) => setImages(res)
+        );
+      } catch (error) {
+        message.error(error);
+      }
+      setIsLoadingSearch(false);
+    }, 1500);
+  };
+
   return (
     <React.Fragment>
       <Head>
@@ -48,33 +64,83 @@ function Home() {
         {/* <Typography.Title title="Gallery" style={{ textAlign: "right" }}>
           Home
         </Typography.Title> */}
-        <LightGallery
-          speed={500}
-          plugins={[lgThumbnail, lgZoom, lgFullscreen, lgRotate]}
-          fullScreen={true}
-          thumbnail={true}
-          mode="lg-fade"
-          elementClassNames="element-gallery"
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          {images?.map((image) => (
-            <a href={image.uri}>
-              <img className="img-fluid" src={image.uri} alt={image.title} />
-            </a>
-          ))}
-        </LightGallery>
+          <Input.Search
+            placeholder="input search text"
+            enterButton="Cari"
+            size="large"
+            width={200}
+            style={{ maxWidth: 500, margin: "20px 0" }}
+            loading={isLoadingSearch}
+            onSearch={handleSearchData}
+          />
+        </div>
+        {images?.length === 0 ? (
+          <Empty />
+        ) : (
+          <LightGallery
+            speed={500}
+            plugins={[
+              lgThumbnail,
+              lgZoom,
+              lgFullscreen,
+              lgRotate,
+              // lgZoomMedium,
+            ]}
+            fullScreen={true}
+            thumbnail={true}
+            zoom={true}
+            mode="lg-fade"
+            elementClassNames="element-gallery"
+          >
+            {images?.map((image) => (
+              <a href={image.uri} key={image.title}>
+                <Fade>
+                  <img
+                    className="img-fluid"
+                    src={image.uri}
+                    alt={image.title}
+                  />
+                </Fade>
+              </a>
+            ))}
+          </LightGallery>
+        )}
       </Content>
 
-      <Button
-        type="primary"
-        size="large"
-        style={{ position: "fixed", bottom: 30, right: 30, borderRadius: 20 }}
-        onClick={() => setOpenModalTambah(true)}
+      <Slide
+        direction="up"
+        delay={300}
+        triggerOnce
+        style={{
+          position: "fixed",
+          bottom: 30,
+          right: 30,
+          zIndex: 9,
+        }}
       >
-        {"+ "} Tambah Data
-      </Button>
+        <Button
+          type="primary"
+          size="large"
+          style={{ borderRadius: 20 }}
+          onClick={() => setOpenModalTambah(true)}
+        >
+          {"+ "} Tambah Data
+        </Button>
+      </Slide>
 
       {/* modal tambah */}
-      <ModalTambah open={openModalTambah} setOpen={setOpenModalTambah} />
+      <ModalTambah
+        open={openModalTambah}
+        setOpen={setOpenModalTambah}
+        fetchData={fetchData}
+      />
     </React.Fragment>
   );
 }

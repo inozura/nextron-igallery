@@ -32,15 +32,15 @@ const Header: React.FC = ({ children }: { children: React.ReactChildren }) => {
   return (
     <div
       style={{
-        position: "fixed",
+        // position: "fixed",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         padding: "10px 25px",
         borderRadius: "10px",
         marginTop: "20px",
-        left: "10%",
-        right: "10%",
+        // left: "10%",
+        // right: "10%",
         width: "80vw",
         backgroundColor: "white",
         boxShadow:
